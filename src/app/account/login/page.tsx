@@ -1,0 +1,1 @@
+import SignIn from'@/components/SignIn';export default function Page(){return <section className="section" style={{paddingTop:170,minHeight:'76vh',background:'#f0f1ea'}}><div className="container"><SignIn/></div></section>}

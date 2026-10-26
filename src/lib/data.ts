@@ -1,0 +1,20 @@
+import destinationsJson from '@/data/destinations.json';
+import toursJson from '@/data/tours.json';
+import experiencesJson from '@/data/experiences.json';
+import stylesJson from '@/data/styles.json';
+import articlesJson from '@/data/articles.json';
+import faqsJson from '@/data/faqs.json';
+import type {Destination,Tour,Experience,TravelStyle,Article,FAQ} from './types';
+
+export const destinations = destinationsJson as Destination[];
+export const tours = toursJson as Tour[];
+export const experiences = experiencesJson as Experience[];
+export const travelStyles = stylesJson as TravelStyle[];
+export const articles = articlesJson as Article[];
+export const faqs = faqsJson as unknown as FAQ[];
+export const destinationBySlug=(s:string)=>destinations.find(d=>d.slug===s);
+export const tourBySlug=(s:string)=>tours.find(t=>t.slug===s);
+export const experienceBySlug=(s:string)=>experiences.find(t=>t.slug===s);
+export const styleBySlug=(s:string)=>travelStyles.find(t=>t.slug===s);
+export const articleBySlug=(s:string)=>articles.find(t=>t.slug===s);
+export const destinationPhoto=(slug:string)=>destinationBySlug(slug)?.image || '/images/sander-traa-bfdshihd5y4-unsplash.webp';

@@ -1,0 +1,1 @@
+export default function Loading(){return <section className="section" style={{paddingTop:160}}><div className="container"><div style={{width:140,height:12,background:'#dbe3dd',marginBottom:24}}/><div style={{width:'60%',height:50,background:'#dbe3dd',marginBottom:35}}/><div style={{height:360,background:'#e0e8e1'}}/></div></section>}

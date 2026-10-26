@@ -1,0 +1,3 @@
+'use client';import{useState}from'react';import{Plus,Minus}from'lucide-react';import{faqs}from'@/lib/data';
+export default function FAQList(){const[c,setC]=useState('All'),[active,setActive]=useState(-1);const cs=['All',...new Set(faqs.map(f=>f.category))];const filtered=faqs.filter(f=>c==='All'||f.category===c);
+return <><div className="region-tabs">{cs.map(x=><button className={'filter-chip '+(c===x?'active':'')} onClick={()=>{setC(x);setActive(-1)}} key={x}>{x}</button>)}</div>{filtered.map((f,i)=><div className="faq-item" key={f.question}><button aria-expanded={active===i} onClick={()=>setActive(active===i?-1:i)}>{f.question}{active===i?<Minus size={18}/>:<Plus size={18}/>}</button>{active===i&&<p>{f.answer}</p>}</div>)}</>}

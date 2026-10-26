@@ -1,0 +1,2 @@
+import type{Metadata}from'next';import BookingClient from'@/components/BookingClient';import{PageHero}from'@/components/UI';
+export const metadata:Metadata={title:'Booking Enquiry'};export default function Booking(){return <><PageHero title="Your journey begins here." description="Tell us about your preferred trip. We'll confirm the details before any payment." image="/images/sander-traa-bfdshihd5y4-unsplash.webp" kicker="PERSONAL BOOKING ENQUIRY"/><section className="section"><div className="container"><BookingClient/></div></section></>}

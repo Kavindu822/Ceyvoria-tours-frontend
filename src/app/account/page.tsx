@@ -1,0 +1,1 @@
+import AccountPanel from '@/components/AccountPanel';export default function Page(){return <section className="section" style={{paddingTop:170,minHeight:'76vh'}}><div className="container"><AccountPanel mode="dashboard"/></div></section>}
