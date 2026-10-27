@@ -394,6 +394,20 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     } else if (window.google?.translate?.TranslateElement) {
       initGoogleTranslate();
     }
+
+    // Active guard to permanently prevent Google Translate from shifting the body top down
+    const fixGoogleBanner = () => {
+      if (document.body.style.top && document.body.style.top !== '0px') {
+        document.body.style.top = '0px';
+      }
+      document.querySelectorAll('body > .skiptranslate, iframe.skiptranslate, .goog-te-banner-frame').forEach((el) => {
+        (el as HTMLElement).style.setProperty('display', 'none', 'important');
+      });
+    };
+
+    const observer = new MutationObserver(fixGoogleBanner);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['style', 'class'], childList: true });
+    return () => observer.disconnect();
   }, []);
 
   // Update HTML direction when Arabic or other RTL language is selected

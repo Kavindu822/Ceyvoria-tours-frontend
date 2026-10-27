@@ -113,20 +113,32 @@
    LANGUAGE SELECTOR & GOOGLE TRANSLATE SUPPRESSION
    ========================================================= */
 
-/* Suppress Google Translate default injected elements, frames & banners */
-.goog-te-banner-frame.skiptranslate,
+/* Suppress Google Translate default injected elements, frames, banners & bars */
+body > .skiptranslate,
+body > div.skiptranslate,
 .goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
 iframe.goog-te-banner-frame,
+iframe.skiptranslate,
 #goog-gt-tt,
-.goog-te-balloon-frame {
+.goog-te-balloon-frame,
+.goog-te-banner,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
   width: 0 !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
 }
 
+html,
 body {
   top: 0px !important;
   position: static !important;
