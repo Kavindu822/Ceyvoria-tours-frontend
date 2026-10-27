@@ -434,6 +434,11 @@ export default async function TourDetail({ params }: Props) {
               <TourCard key={x.slug} tour={x} />
             ))}
           </div>
+          <div style={{ marginTop: 42, textAlign: 'center' }}>
+            <Link className="text-link" href="/tours" style={{ fontSize: '.88rem' }}>
+              View all journeys <ArrowRight size={15} />
+            </Link>
+          </div>
         </div>
       </section>
 

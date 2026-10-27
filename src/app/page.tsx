@@ -85,6 +85,11 @@ export default function Home() {
           <div className="journey-grid featured">
             {tours.slice(0, 3).map((tour, i) => <TourCard key={tour.slug} tour={tour} first={i === 0} />)}
           </div>
+          <div style={{ marginTop: 42, textAlign: 'center' }}>
+            <Link className="text-link" href="/tours" style={{ fontSize: '.88rem' }}>
+              View all journeys <ArrowRight size={15} />
+            </Link>
+          </div>
         </div>
       </section>
 
