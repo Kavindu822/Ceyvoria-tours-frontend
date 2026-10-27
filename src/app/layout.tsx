@@ -6,6 +6,8 @@ import CookieConsent from '@/components/CookieConsent';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ActiveLanguageFloatingPill } from '@/components/LanguageSelector';
 import { site } from '@/lib/site';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com';
 
@@ -228,6 +230,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <CookieConsent />
           <ActiveLanguageFloatingPill />
+          <Analytics />
+          <SpeedInsights />
         </LanguageProvider>
       </body>
     </html>
