@@ -76,7 +76,7 @@ export default async function DestinationDetail({ params }: Props) {
       addressCountry: 'LK',
     },
     touristType: ['Cultural', 'Sightseeing', 'Nature', 'Photography'],
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com'}/destinations/${d.slug}`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com'}/destinations/${d.slug}`,
   };
 
   return (

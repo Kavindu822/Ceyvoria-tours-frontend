@@ -38,7 +38,7 @@ export default function Contact() {
             '@type': 'TravelAgency',
             name: site.name,
             description: site.subtitle,
-            url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com',
+            url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com',
             telephone: site.phoneRaw,
             email: site.email,
             address: {

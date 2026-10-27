@@ -91,12 +91,12 @@ export default async function TourDetail({ params }: Props) {
       price: t.startingPrice || 1200,
       priceCurrency: t.currency || 'USD',
       availability: 'https://schema.org/InStock',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com'}/tours/${t.slug}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com'}/tours/${t.slug}`,
     },
     provider: {
       '@type': 'TravelAgency',
       name: 'CEYVORIA TOURS',
-      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com',
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com',
     },
     itinerary: {
       '@type': 'ItemList',

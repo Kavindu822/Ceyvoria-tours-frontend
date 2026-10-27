@@ -7,7 +7,7 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import { ActiveLanguageFloatingPill } from '@/components/LanguageSelector';
 import { site } from '@/lib/site';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com';
 
 export const viewport: Viewport = {
   themeColor: '#052E27',

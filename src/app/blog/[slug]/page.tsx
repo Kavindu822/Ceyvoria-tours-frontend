@@ -70,19 +70,19 @@ export default async function ArticlePage({ params }: Props) {
     author: {
       '@type': 'Organization',
       name: 'CEYVORIA TOURS',
-      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com',
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com',
     },
     publisher: {
       '@type': 'Organization',
       name: 'CEYVORIA TOURS',
       logo: {
         '@type': 'ImageObject',
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com'}/icon-512.png`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com'}/icon-512.png`,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com'}/blog/${a.slug}`,
+      '@id': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoriatours.com'}/blog/${a.slug}`,
     },
   };
 
