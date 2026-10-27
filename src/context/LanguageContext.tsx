@@ -320,8 +320,41 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Helper to delete cookie completely
+  // Helper to delete cookie completely across all possible domain and path levels
+  const clearAllGoogTransCookies = () => {
+    if (typeof document === 'undefined') return;
+    const expired = 'expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0;';
+    const hostname = window.location.hostname;
+    const hostParts = hostname.split('.');
+
+    const paths = ['/', window.location.pathname];
+    const domains = ['', hostname, `.${hostname}`];
+
+    for (let i = 0; i < hostParts.length - 1; i++) {
+      const d = hostParts.slice(i).join('.');
+      domains.push(d);
+      domains.push(`.${d}`);
+    }
+
+    paths.forEach((p) => {
+      domains.forEach((d) => {
+        const domStr = d ? `domain=${d};` : '';
+        document.cookie = `googtrans=; ${expired} path=${p}; ${domStr}`;
+      });
+    });
+
+    // Also set /en/en as neutralizer across domains so Google Translate widget disables translation
+    document.cookie = 'googtrans=/en/en; path=/;';
+    if (hostname !== 'localhost' && !hostname.startsWith('127.')) {
+      document.cookie = `googtrans=/en/en; domain=.${hostname}; path=/;`;
+    }
+  };
+
   const deleteCookie = (name: string) => {
+    if (name === 'googtrans') {
+      clearAllGoogTransCookies();
+      return;
+    }
     if (typeof document === 'undefined') return;
     const expired = 'expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     const hostname = window.location.hostname;
@@ -342,18 +375,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     let initialCode = 'en';
 
-    if (googCookie) {
-      // Cookie format is usually /en/de or /auto/de
+    // 1. If user explicitly chose English, lock English and purge any translation cookies
+    if (localLang === 'en') {
+      initialCode = 'en';
+      clearAllGoogTransCookies();
+    }
+    // 2. If user saved a non-English language in localStorage, use it
+    else if (localLang && localLang !== 'en' && LANGUAGES.some((l) => l.code === localLang)) {
+      initialCode = localLang;
+      setCookie('googtrans', `/en/${localLang}`);
+    }
+    // 3. If googtrans cookie is set to a non-English language and no contrary local preference
+    else if (googCookie && googCookie !== '/en/en' && googCookie !== '/auto/en') {
       const parts = googCookie.split('/');
       const codeFromCookie = parts[parts.length - 1];
-      if (codeFromCookie && LANGUAGES.some((l) => l.code === codeFromCookie)) {
+      if (codeFromCookie && codeFromCookie !== 'en' && LANGUAGES.some((l) => l.code === codeFromCookie)) {
         initialCode = codeFromCookie;
-      }
-    } else if (localLang && LANGUAGES.some((l) => l.code === localLang)) {
-      initialCode = localLang;
-      // Re-establish cookie if local storage had it
-      if (initialCode !== 'en') {
-        setCookie('googtrans', `/en/${initialCode}`);
       }
     }
 
@@ -422,12 +459,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [currentLang]);
 
   const setLanguage = (code: string) => {
-    if (code === currentLang) return;
-
+    // If selecting English, always execute resetToEnglish
     if (code === 'en') {
       resetToEnglish();
       return;
     }
+
+    if (code === currentLang) return;
 
     startTransition(() => {
       setCurrentLang(code);
@@ -449,20 +487,40 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetToEnglish = () => {
+    // 1. Lock English in state and storage
     setCurrentLang('en');
-    localStorage.removeItem('ceyvoria_lang');
-    deleteCookie('googtrans');
-    deleteCookie('googtrans');
+    localStorage.setItem('ceyvoria_lang', 'en');
 
-    // Attempt resetting select
+    // 2. Thoroughly purge googtrans cookies across all domains and paths
+    clearAllGoogTransCookies();
+
+    // 3. Reset Google Translate combo widget (index 0 is original "Select Language")
     const combo = document.querySelector('.goog-te-combo') as HTMLSelectElement | null;
     if (combo) {
-      combo.value = 'en';
+      combo.selectedIndex = 0;
+      combo.value = '';
       combo.dispatchEvent(new Event('change'));
     }
 
-    // A fast reload guarantees 100% clean English text without cached translation remnants
-    window.location.reload();
+    // 4. Trigger Google Translate internal restore if available in iframe
+    try {
+      const iframe = document.querySelector('iframe.goog-te-banner-frame') as HTMLIFrameElement | null;
+      if (iframe?.contentDocument) {
+        const btn = iframe.contentDocument.querySelector('[id$="restore"], button') as HTMLElement | null;
+        if (btn) btn.click();
+      }
+    } catch {}
+
+    // 5. Remove any translation artifacts from html tag
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.remove('translated-ltr', 'translated-rtl');
+      document.documentElement.dir = 'ltr';
+    }
+
+    // 6. Fast reload guarantees 100% clean original English server-rendered text
+    setTimeout(() => {
+      window.location.reload();
+    }, 60);
   };
 
   const currentLanguage = LANGUAGES.find((l) => l.code === currentLang) || LANGUAGES[0];

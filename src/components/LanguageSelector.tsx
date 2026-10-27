@@ -62,7 +62,11 @@ export default function LanguageSelector({ mode = 'header', className = '' }: La
   const handleSelect = (code: string) => {
     setIsOpen(false);
     setSearchQuery('');
-    setLanguage(code);
+    if (code === 'en') {
+      resetToEnglish();
+    } else {
+      setLanguage(code);
+    }
   };
 
   // --- FOOTER MODE ---
