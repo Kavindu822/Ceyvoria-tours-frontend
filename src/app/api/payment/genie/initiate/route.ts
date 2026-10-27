@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendInquiryNotification } from '@/lib/email';
 
 interface InitiatePayload {
   quotationRef: string;
@@ -37,6 +38,23 @@ export async function POST(req: NextRequest) {
 
     // In sandbox or demo integration, provide complete verified session
     const isMock = !process.env.DIALOG_GENIE_LIVE_ACTIVE;
+
+    // Send email alert to admin and confirmation to customer
+    try {
+      await sendInquiryNotification({
+        type: 'AdvancePayment',
+        reference: body.quotationRef,
+        guestName: body.customerName,
+        guestEmail: body.customerEmail,
+        guestPhone: body.customerPhone || '',
+        tourTitle: body.tourTitle,
+        amount: body.advanceAmount,
+        currency: body.currency,
+        specialRequests: `Dialog Genie Order ID: ${orderId}`,
+      });
+    } catch (e) {
+      console.warn('[Genie payment email notification error]:', e);
+    }
 
     if (isMock) {
       return NextResponse.json({
