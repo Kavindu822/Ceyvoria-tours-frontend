@@ -49,8 +49,8 @@ export default function Header() {
             {t('planTrip')} <ArrowUpRight size={15} />
           </Link>
         </nav>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div className="mobile-only-lang" style={{ display: 'none' }}>
+        <div className="mobile-header-actions">
+          <div className="mobile-lang-btn-wrap">
             <LanguageSelector mode="header" />
           </div>
           <button
