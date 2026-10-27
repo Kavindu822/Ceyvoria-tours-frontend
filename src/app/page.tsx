@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -7,6 +8,29 @@ import PlannerBar from '@/components/PlannerBar';
 import CuriosityPlanner from '@/components/CuriosityPlanner';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import { Eyebrow, ButtonLink, SectionHeader, TourCard, DestinationCard, StyleCard, BlogCard, ContactCTA } from '@/components/UI';
+
+export const metadata: Metadata = {
+  title: 'CEYVORIA TOURS | Luxury Private Sri Lanka Tours & Tailor-Made Holidays',
+  description:
+    'Discover Sri Lanka with bespoke luxury itineraries, dedicated private chauffeur-guides, and hand-picked boutique villas. Explore Sigiriya, Ella tea hills, Yala wildlife safaris, and tropical beaches.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'CEYVORIA TOURS | Luxury Private Sri Lanka Tours & Tailor-Made Holidays',
+    description:
+      'Private, tailor-made journeys through Sri Lanka’s most extraordinary places. Dedicated chauffeur-guides, boutique villas, and 24/7 concierge.',
+    url: '/',
+    images: [
+      {
+        url: '/images/sander-traa-bfdshihd5y4-unsplash.webp',
+        width: 1200,
+        height: 630,
+        alt: 'CEYVORIA TOURS - Discover Sri Lanka, Beautifully',
+      },
+    ],
+  },
+};
 
 const featuredSlugs = ['sigiriya-rock-fortress', 'ella-nine-arch-bridge', 'galle-fort', 'yala-national-park', 'mirissa'];
 

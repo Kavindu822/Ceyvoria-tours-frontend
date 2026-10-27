@@ -5,9 +5,37 @@ import { PageHero, ContactCTA, Eyebrow } from '@/components/UI';
 import TourFilter from '@/components/TourFilter';
 
 export const metadata: Metadata = {
-  title: '20 Distinctive Island Journeys | CEYVORIA TOURS',
+  title: '20 Curated Private Sri Lanka Tour Itineraries (6–15 Days) | CEYVORIA TOURS',
   description:
-    'Explore our curated collection of 20 private, tailor-made Sri Lanka tour itineraries ranging from 6 to 15 days.',
+    'Browse our curated collection of 20 private, tailor-made Sri Lanka tour itineraries ranging from 6 to 15 days. Dedicated chauffeur-guides, boutique luxury stays, wildlife safaris, and custom route planning.',
+  keywords: [
+    'Sri Lanka tour packages',
+    'private Sri Lanka itineraries',
+    '7 day Sri Lanka tour',
+    '10 day Sri Lanka itinerary',
+    '12 day Sri Lanka trip',
+    '14 day Sri Lanka tour package',
+    'Sri Lanka vacation packages',
+    'luxury Sri Lanka holidays',
+    'bespoke Sri Lanka journeys',
+  ],
+  alternates: {
+    canonical: '/tours',
+  },
+  openGraph: {
+    title: '20 Curated Private Sri Lanka Tour Itineraries | CEYVORIA TOURS',
+    description:
+      'Curated collection of 20 private, tailor-made Sri Lanka tour itineraries ranging from 6 to 15 days with dedicated chauffeur-guides.',
+    url: '/tours',
+    images: [
+      {
+        url: '/images/sander-traa-bfdshihd5y4-unsplash.webp',
+        width: 1200,
+        height: 630,
+        alt: 'CEYVORIA TOURS - 20 Distinctive Sri Lanka Journeys',
+      },
+    ],
+  },
 };
 
 export default function Tours() {

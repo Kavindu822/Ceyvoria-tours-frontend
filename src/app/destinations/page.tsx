@@ -4,9 +4,37 @@ import DestinationFilter from '@/components/DestinationFilter';
 import { Sun, Waves, Mountain, Compass, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: '45 Extraordinary Destinations in Sri Lanka | CEYVORIA TOURS',
+  title: '45 Extraordinary Destinations in Sri Lanka | Complete Travel Guide | CEYVORIA TOURS',
   description:
-    'Explore the heritage, hill country, golden coastlines, and wildlife of Sri Lanka with our comprehensive destination guide. Featuring Mirissa, Unawatuna, Hiriketiya, Sigiriya, Kandy, and Yala.',
+    'Explore the heritage, hill country, golden coastlines, and wildlife of Sri Lanka with our comprehensive destination guide. Featuring Mirissa, Unawatuna, Hiriketiya, Sigiriya, Kandy, Ella, and Yala.',
+  keywords: [
+    'Sri Lanka destinations',
+    'places to visit in Sri Lanka',
+    'Mirissa Sri Lanka',
+    'Sigiriya fortress',
+    'Ella Sri Lanka travel',
+    'Yala National Park',
+    'Galle Fort',
+    'best places in Sri Lanka',
+    'Sri Lanka travel guide',
+  ],
+  alternates: {
+    canonical: '/destinations',
+  },
+  openGraph: {
+    title: '45 Extraordinary Destinations in Sri Lanka | CEYVORIA TOURS',
+    description:
+      'From the golden surf bays of Mirissa to ancient cloud citadels and wild elephant sanctuaries. An authentic guide to Sri Lanka’s 45 most captivating places.',
+    url: '/destinations',
+    images: [
+      {
+        url: '/images/sander-traa-bfdshihd5y4-unsplash.webp',
+        width: 1200,
+        height: 630,
+        alt: 'CEYVORIA TOURS - 45 Extraordinary Destinations in Sri Lanka',
+      },
+    ],
+  },
 };
 
 export default function Destinations() {

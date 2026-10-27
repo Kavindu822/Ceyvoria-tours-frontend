@@ -1,3 +1,16 @@
 import type{Metadata}from'next';import Link from'next/link';import FAQList from '@/components/FAQList';import{PageHero}from'@/components/UI';
-export const metadata:Metadata={title:'Frequently Asked Questions'};
+export const metadata: Metadata = {
+  title: 'Frequently Asked Questions (FAQ) | Sri Lanka Travel Advice | CEYVORIA TOURS',
+  description:
+    'Answers to common questions about traveling to Sri Lanka: private chauffeur-guide standards, visa requirements, best season to visit, payment options, and custom tour planning.',
+  alternates: {
+    canonical: '/faq',
+  },
+  openGraph: {
+    title: 'Frequently Asked Questions (FAQ) | CEYVORIA TOURS',
+    description:
+      'Answers to common questions about traveling to Sri Lanka with private chauffeur-guides and tailor-made itineraries.',
+    url: '/faq',
+  },
+};
 export default function FAQs(){return <><PageHero title="Good to know." description="Helpful answers while you're imagining your journey." image="/images/liptons-seat-haputale.webp" kicker="TRAVEL WITH CONFIDENCE"/><section className="section"><div className="container narrow"><h2 className="forest">A few things you may wonder.</h2><p>We would always rather you ask. For anything else, please <Link href="/contact" className="text-link">get in touch →</Link>.</p><FAQList/></div></section></>}

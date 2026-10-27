@@ -30,9 +30,45 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const t = tourBySlug(slug);
+  if (!t) return { title: 'Tour Not Found | CEYVORIA TOURS' };
+
+  const title = `${t.title} – ${t.days} Days & ${t.nights} Nights Private Sri Lanka Tour | CEYVORIA TOURS`;
+  const description = `${t.description} Private chauffeur-guided itinerary covering ${t.route.map(r => r.replace(/-/g, ' ')).join(', ')}. Tailored by CEYVORIA TOURS.`;
+
   return {
-    title: t ? `${t.title} – ${t.days} Days & ${t.nights} Nights | CEYVORIA TOURS` : 'Tour not found',
-    description: t?.description,
+    title,
+    description,
+    keywords: [
+      t.title,
+      `${t.days} day Sri Lanka tour`,
+      `${t.style} tour Sri Lanka`,
+      'private tour Sri Lanka',
+      'chauffeur guide Sri Lanka',
+      ...t.route.map(r => `${r.replace(/-/g, ' ')} Sri Lanka`),
+    ],
+    alternates: {
+      canonical: `/tours/${t.slug}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/tours/${t.slug}`,
+      type: 'website',
+      images: [
+        {
+          url: t.image,
+          width: 1200,
+          height: 630,
+          alt: `${t.title} - CEYVORIA TOURS`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [t.image],
+    },
   };
 }
 
@@ -43,8 +79,48 @@ export default async function TourDetail({ params }: Props) {
 
   const related = tours.filter(x => x.slug !== t.slug).slice(0, 3);
 
+  const tripSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
+    name: t.title,
+    description: t.description,
+    image: t.image,
+    touristType: ['Luxury', 'Cultural', 'Wildlife', 'Adventure'],
+    offers: {
+      '@type': 'Offer',
+      price: t.startingPrice || 1200,
+      priceCurrency: t.currency || 'USD',
+      availability: 'https://schema.org/InStock',
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com'}/tours/${t.slug}`,
+    },
+    provider: {
+      '@type': 'TravelAgency',
+      name: 'CEYVORIA TOURS',
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com',
+    },
+    itinerary: {
+      '@type': 'ItemList',
+      numberOfItems: t.itinerary.length,
+      itemListElement: t.itinerary.map((day, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        item: {
+          '@type': 'TouristAttraction',
+          name: `Day ${day.day}: ${day.title}`,
+          description: day.description,
+        },
+      })),
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(tripSchema),
+        }}
+      />
       {/* Hero */}
       <div className="detail-hero">
         <Image
