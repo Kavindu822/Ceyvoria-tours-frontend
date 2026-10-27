@@ -6,6 +6,7 @@ import { X, CheckCircle2, MessageCircle, Send, ShieldCheck, Calendar, Users, Hot
 import Link from 'next/link';
 import type { Tour } from '@/lib/types';
 import { site } from '@/lib/site';
+import { createBooking } from '@/lib/api';
 
 interface Props {
   tour: Tour;
@@ -90,21 +91,17 @@ _Awaiting your custom itemized quotation & advance payment details._`;
 
     const waUrl = `https://wa.me/${site.whatsappRaw.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
 
-    // Attempt to store in backend (non-blocking)
+    // Store in database backend (Neon PostgreSQL)
     try {
-      await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tourSlug: tour.slug,
-          startDate: travelDate || new Date().toISOString().slice(0, 10),
-          travellers: Number(adults) + Number(childrenCount),
-          firstName: fullName.split(' ')[0] || fullName,
-          lastName: fullName.split(' ').slice(1).join(' ') || 'Guest',
-          email,
-          phone,
-          specialRequests: `Quote Ref: ${ref} | Need Hotels: ${needHotels} | Meal Plan: ${mealPlan} | Activities: ${selectedActivities.join(', ')} | Notes: ${specialRequests}`,
-        }),
+      await createBooking({
+        tourSlug: tour.slug,
+        startDate: travelDate || new Date().toISOString().slice(0, 10),
+        travellers: Number(adults) + Number(childrenCount),
+        firstName: fullName.split(' ')[0] || fullName,
+        lastName: fullName.split(' ').slice(1).join(' ') || 'Guest',
+        email,
+        phone,
+        specialRequests: `Quote Ref: ${ref} | Country: ${country || 'International'} | Need Hotels: ${needHotels} | Meal Plan: ${mealPlan} | Activities: ${selectedActivities.join(', ')} | Notes: ${specialRequests}`,
       });
     } catch (err) {
       // Ignore API errors to ensure customer WhatsApp flow is uninterrupted
