@@ -91,23 +91,7 @@ _Awaiting your custom itemized quotation & advance payment details._`;
 
     const waUrl = `https://wa.me/${site.whatsappRaw.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
 
-    // Store in database backend (Neon PostgreSQL)
-    try {
-      await createBooking({
-        tourSlug: tour.slug,
-        startDate: travelDate || new Date().toISOString().slice(0, 10),
-        travellers: Number(adults) + Number(childrenCount),
-        firstName: fullName.split(' ')[0] || fullName,
-        lastName: fullName.split(' ').slice(1).join(' ') || 'Guest',
-        email,
-        phone,
-        specialRequests: `Quote Ref: ${ref} | Country: ${country || 'International'} | Need Hotels: ${needHotels} | Meal Plan: ${mealPlan} | Activities: ${selectedActivities.join(', ')} | Notes: ${specialRequests}`,
-      });
-    } catch (err) {
-      // Ignore API errors to ensure customer WhatsApp flow is uninterrupted
-    }
-
-    // Dispatch automated email alerts to ceyvoriatours@gmail.com and customer
+    // 1. Dispatch automated email alerts to ceyvoriatours@gmail.com and customer immediately
     try {
       await fetch('/api/notify', {
         method: 'POST',
@@ -130,6 +114,22 @@ _Awaiting your custom itemized quotation & advance payment details._`;
       });
     } catch (err) {
       console.warn('[Email Notification Dispatch Error]:', err);
+    }
+
+    // 2. Store in database backend (Neon PostgreSQL) safely
+    try {
+      await createBooking({
+        tourSlug: tour.slug,
+        startDate: travelDate || new Date().toISOString().slice(0, 10),
+        travellers: Number(adults) + Number(childrenCount),
+        firstName: fullName.split(' ')[0] || fullName,
+        lastName: fullName.split(' ').slice(1).join(' ') || 'Guest',
+        email,
+        phone,
+        specialRequests: `Quote Ref: ${ref} | Country: ${country || 'International'} | Need Hotels: ${needHotels} | Meal Plan: ${mealPlan} | Activities: ${selectedActivities.join(', ')} | Notes: ${specialRequests}`,
+      });
+    } catch (err) {
+      // Ignore API errors to ensure customer WhatsApp flow is uninterrupted
     }
 
     setIsSubmitting(false);

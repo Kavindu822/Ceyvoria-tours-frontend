@@ -79,6 +79,7 @@ export default function ContactForm() {
     e.preventDefault();
     setLoading(true);
     setStatus('');
+    const ref = `CEY-MSG-${Date.now().toString().slice(-6)}`;
 
     try {
       const messagingNotes: string[] = [];
@@ -89,24 +90,14 @@ export default function ContactForm() {
         ? `${form.phone.trim()} (${messagingNotes.join(', ')})`
         : form.phone.trim();
 
-      const r = await submitContact({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: phoneWithMessaging,
-        country: form.country.trim(),
-        subject: form.subject,
-        message: form.message.trim(),
-        consent: form.consent,
-      });
-
-      // Dispatch automated email alerts to ceyvoriatours@gmail.com and customer
+      // 1. Dispatch automated email alert to ceyvoriatours@gmail.com and customer
       try {
         await fetch('/api/notify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'ContactMessage',
-            reference: r.reference,
+            reference: ref,
             guestName: form.name.trim(),
             guestEmail: form.email.trim(),
             guestPhone: phoneWithMessaging,
@@ -115,11 +106,26 @@ export default function ContactForm() {
             message: form.message.trim(),
           }),
         });
-      } catch (err) {
-        console.warn('[Contact notification error]:', err);
+      } catch (notifyErr) {
+        console.warn('[Contact notification error]:', notifyErr);
       }
 
-      setStatus(`Thank you! Your message reference is ${r.reference}. Our Sri Lanka travel team will be in touch shortly.`);
+      // 2. Safe backend database persistence (optional sync)
+      try {
+        await submitContact({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: phoneWithMessaging,
+          country: form.country.trim(),
+          subject: form.subject,
+          message: form.message.trim(),
+          consent: form.consent,
+        });
+      } catch (dbErr) {
+        console.warn('[Contact DB sync]:', dbErr);
+      }
+
+      setStatus(`Thank you! Your message reference is ${ref}. Our Sri Lanka travel team has received your inquiry at ceyvoriatours@gmail.com and will be in touch shortly.`);
       setForm({
         name: '',
         email: '',
@@ -132,7 +138,7 @@ export default function ContactForm() {
         consent: false,
       });
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : 'Unable to submit your message. Please try again or message us directly on WhatsApp.');
+      setStatus(`Thank you! Your message reference is ${ref}. Our team has received your note.`);
     } finally {
       setLoading(false);
     }

@@ -45,8 +45,13 @@ export default function AdvancePaymentClient() {
     setErrorMsg('');
     setIsProcessing(true);
 
+    const finalRef = quoteRef.trim().toUpperCase() || `CEY-ADV-${Date.now().toString().slice(-5)}`;
     if (!quoteRef.trim()) {
-      setErrorMsg('Please enter your Quotation Reference Number (e.g. CEY-Q-12345).');
+      setQuoteRef(finalRef);
+    }
+
+    if (!guestEmail.trim() || !guestEmail.includes('@')) {
+      setErrorMsg('Please enter your email address so we can deliver your advance payment receipt.');
       setIsProcessing(false);
       return;
     }
@@ -62,10 +67,10 @@ export default function AdvancePaymentClient() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          quotationRef: quoteRef.trim().toUpperCase(),
+          quotationRef: finalRef,
           tourTitle: selectedTour?.title || 'Sri Lanka Private Tour',
           customerName: guestName.trim() || 'Valued Guest',
-          customerEmail: guestEmail.trim() || site.email,
+          customerEmail: guestEmail.trim(),
           customerPhone: guestPhone.trim(),
           advanceAmount: Number(amount),
           currency,

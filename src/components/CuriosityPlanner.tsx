@@ -39,7 +39,11 @@ export default function CuriosityPlanner() {
   const [partyType, setPartyType] = useState('Couple / Honeymoon');
   const [guestNotes, setGuestNotes] = useState('');
   const [travelMonth, setTravelMonth] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
   const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleCuriosity = (label: string) => {
     setSelectedCuriosities(prev =>
@@ -47,16 +51,45 @@ export default function CuriosityPlanner() {
     );
   };
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
+    const ref = `CEY-CURIO-${Date.now().toString().slice(-6)}`;
     const curiositiesText =
       selectedCuriosities.length > 0
         ? selectedCuriosities.map(c => ` • ${c}`).join('\n')
         : ' • Open to recommendations';
 
+    // Dispatch automated email alerts to ceyvoriatours@gmail.com and customer
+    try {
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'CustomTrip',
+          reference: ref,
+          guestName: guestName.trim() || 'Curious Traveller',
+          guestEmail: guestEmail.trim() || 'inquiry@ceyvoriatours.com',
+          guestPhone: guestPhone.trim() || '',
+          tourTitle: `Homepage Curiosity Inquiry (${duration} · ${partyType})`,
+          travelDate: travelMonth || 'Flexible',
+          partySize: partyType,
+          activities: selectedCuriosities,
+          specialRequests: `Guest Notes: ${guestNotes || 'None'} | Sparked by: ${selectedCuriosities.join(', ')}`,
+        }),
+      });
+    } catch (err) {
+      console.warn('[Curiosity notification error]:', err);
+    }
+
     const message = `🌿 *MY DREAM SRI LANKA JOURNEY & CURIOSITY* 🌿
 ----------------------------------
+📌 *Inquiry Ref:* ${ref}
+👤 *Name:* ${guestName.trim() || 'Valued Guest'}
+📧 *Email:* ${guestEmail.trim() || 'Not specified'}
+📱 *Phone:* ${guestPhone.trim() || 'Not specified'}
+
 ✨ *What Sparks My Curiosity:*
 ${curiositiesText}
 
@@ -75,6 +108,7 @@ _Hello Ceyvoria Tours! I shared my journey curiosity — please arrange our trip
       window.open(waUrl, '_blank');
     }
     setSent(true);
+    setIsSubmitting(false);
   };
 
   return (
@@ -378,7 +412,115 @@ _Hello Ceyvoria Tours! I shared my journey curiosity — please arrange our trip
               />
             </div>
 
-            {/* Step 4: Submission Actions */}
+            {/* Step 4: Your Contact Details (For Quotation & Alerts) */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: 16,
+                marginBottom: 26,
+                paddingTop: 18,
+                borderTop: '1px solid #eef2ed',
+              }}
+            >
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--forest)',
+                    marginBottom: 8,
+                  }}
+                >
+                  6. Your Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Eleanor Vance"
+                  value={guestName}
+                  onChange={e => setGuestName(e.target.value)}
+                  style={{
+                    width: '100%',
+                    minHeight: 44,
+                    padding: '10px 14px',
+                    borderRadius: 4,
+                    border: '1px solid #cbd5cc',
+                    background: '#fdfdfd',
+                    fontSize: '0.82rem',
+                    color: 'var(--forest)',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--forest)',
+                    marginBottom: 8,
+                  }}
+                >
+                  7. Email Address (For Itinerary Quote)
+                </label>
+                <input
+                  type="email"
+                  placeholder="eleanor@example.com"
+                  value={guestEmail}
+                  onChange={e => setGuestEmail(e.target.value)}
+                  style={{
+                    width: '100%',
+                    minHeight: 44,
+                    padding: '10px 14px',
+                    borderRadius: 4,
+                    border: '1px solid #cbd5cc',
+                    background: '#fdfdfd',
+                    fontSize: '0.82rem',
+                    color: 'var(--forest)',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--forest)',
+                    marginBottom: 8,
+                  }}
+                >
+                  8. WhatsApp / Phone
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+44 7123 456789"
+                  value={guestPhone}
+                  onChange={e => setGuestPhone(e.target.value)}
+                  style={{
+                    width: '100%',
+                    minHeight: 44,
+                    padding: '10px 14px',
+                    borderRadius: 4,
+                    border: '1px solid #cbd5cc',
+                    background: '#fdfdfd',
+                    fontSize: '0.82rem',
+                    color: 'var(--forest)',
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Step 5: Submission Actions */}
             <div
               style={{
                 display: 'flex',
@@ -422,6 +564,7 @@ _Hello Ceyvoria Tours! I shared my journey curiosity — please arrange our trip
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: '100%', maxWidth: 'fit-content' }}>
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="btn btn-gold"
                   style={{
                     fontSize: '0.84rem',
@@ -433,7 +576,7 @@ _Hello Ceyvoria Tours! I shared my journey curiosity — please arrange our trip
                   }}
                 >
                   <MessageCircle size={17} style={{ color: '#152d27' }} />
-                  Arrange My Trip Nicely →
+                  {isSubmitting ? 'Sending Request...' : 'Arrange My Trip Nicely →'}
                 </button>
 
                 <Link
@@ -453,19 +596,21 @@ _Hello Ceyvoria Tours! I shared my journey curiosity — please arrange our trip
               <div
                 style={{
                   marginTop: 18,
-                  padding: '12px 18px',
+                  padding: '14px 20px',
                   background: '#ecf5ec',
                   border: '1px solid #a3cca8',
                   borderRadius: 4,
-                  fontSize: '0.8rem',
+                  fontSize: '0.82rem',
                   color: '#1a5229',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
+                  gap: 10,
                 }}
               >
-                <Check size={16} />
-                Thank you! Your curiosity & journey wish list have been prepared for WhatsApp. We will reply promptly with your tailored quotation!
+                <Check size={18} style={{ flexShrink: 0 }} />
+                <span>
+                  <strong>Enquiry received!</strong> We have dispatched an alert to our travel team at <em>ceyvoriatours@gmail.com</em> and prepared your WhatsApp chat. We will reply promptly with your custom proposal!
+                </span>
               </div>
             )}
           </form>

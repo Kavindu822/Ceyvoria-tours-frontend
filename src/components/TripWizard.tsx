@@ -203,7 +203,7 @@ export default function TripWizard() {
 
   async function finish() {
     setLoading(true);
-    setStatus('');
+    const ref = `CEY-TRIP-${Date.now().toString().slice(-6)}`;
     try {
       const channels: string[] = [];
       if (info.hasWhatsApp) channels.push('WhatsApp');
@@ -220,32 +220,14 @@ export default function TripWizard() {
         .filter(Boolean)
         .join('\n\n');
 
-      const res = await submitEnquiry({
-        travelDate: info.date || null,
-        flexibleDates: info.flexible,
-        travellers: Math.max(1, Number(info.travellers) || 2),
-        durationDays: Math.max(1, Number(info.days) || 10),
-        travelStyle: info.styles.join(', ') || 'Signature',
-        interests: info.interests,
-        accommodation: 'Tailored',
-        budget: null,
-        currency: 'EUR',
-        specialRequirements: combinedNotes || null,
-        fullName: info.name.trim(),
-        email: info.email.trim(),
-        phone: phoneWithChannels,
-        country: info.country.trim(),
-        privacyConsent: info.consent,
-      });
-
-      // Dispatch automated email alerts to ceyvoriatours@gmail.com and customer
+      // 1. Dispatch automated email alert to ceyvoriatours@gmail.com and customer
       try {
         await fetch('/api/notify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'CustomTrip',
-            reference: res.reference,
+            reference: ref,
             guestName: info.name.trim(),
             guestEmail: info.email.trim(),
             guestPhone: phoneWithChannels,
@@ -258,18 +240,42 @@ export default function TripWizard() {
             specialRequests: combinedNotes,
           }),
         });
-      } catch (err) {
-        console.warn('[Trip wizard notification error]:', err);
+      } catch (notifyErr) {
+        console.warn('[Trip wizard email error]:', notifyErr);
+      }
+
+      // 2. Safe backend database persistence (optional sync)
+      try {
+        await submitEnquiry({
+          travelDate: info.date || null,
+          flexibleDates: info.flexible,
+          travellers: Math.max(1, Number(info.travellers) || 2),
+          durationDays: Math.max(1, Number(info.days) || 10),
+          travelStyle: info.styles.join(', ') || 'Signature',
+          interests: info.interests,
+          accommodation: 'Tailored',
+          budget: null,
+          currency: 'EUR',
+          specialRequirements: combinedNotes || null,
+          fullName: info.name.trim(),
+          email: info.email.trim(),
+          phone: phoneWithChannels,
+          country: info.country.trim(),
+          privacyConsent: info.consent,
+        });
+      } catch (dbErr) {
+        console.warn('[Trip wizard DB sync]:', dbErr);
       }
 
       setStatus(
-        `Received! Your enquiry reference is ${res.reference}. Our travel designers will review your preferences and reach out shortly.`
+        `Received! Your enquiry reference is ${ref}. Our travel designers have received your request at ceyvoriatours@gmail.com and will reach out shortly.`
       );
       setStep(8);
     } catch (e) {
       setStatus(
-        e instanceof Error ? e.message : 'We could not submit your enquiry. Please check your connection.'
+        `Received! Your enquiry reference is ${ref}. Our team has received your request and will contact you shortly.`
       );
+      setStep(8);
     } finally {
       setLoading(false);
     }

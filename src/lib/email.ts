@@ -56,31 +56,60 @@ export async function sendInquiryNotification(payload: InquiryEmailPayload) {
     try {
       const resend = new Resend(RESEND_KEY);
       
-      // 1. Send Admin Alert
-      await resend.emails.send({
+      // 1. Send Admin Alert to ceyvoriatours@gmail.com
+      const adminResult = await resend.emails.send({
         from: FROM_EMAIL,
         to: ADMIN_EMAIL,
         subject: adminSubject,
         html: adminHtml,
-        replyTo: payload.guestEmail,
+        replyTo: payload.guestEmail || ADMIN_EMAIL,
       });
 
+      if (adminResult.error) {
+        console.warn('[Resend primary sender notice]:', adminResult.error.message);
+        // Automatic fallback sender if custom domain DNS has any temporary propagation issue
+        const fallbackResult = await resend.emails.send({
+          from: 'CEYVORIA TOURS <onboarding@resend.dev>',
+          to: ADMIN_EMAIL,
+          subject: adminSubject,
+          html: adminHtml,
+          replyTo: payload.guestEmail || ADMIN_EMAIL,
+        });
+        if (fallbackResult.error) {
+          console.error('[Resend fallback error]:', fallbackResult.error.message);
+        } else {
+          console.log('[Resend Delivered via Fallback]:', fallbackResult.data?.id);
+        }
+      } else {
+        console.log('[Resend Admin Alert Delivered]:', adminResult.data?.id);
+      }
+
       // 2. Send Customer Confirmation (only if customer email is valid)
-      if (payload.guestEmail && payload.guestEmail.includes('@')) {
-        await resend.emails.send({
+      if (payload.guestEmail && payload.guestEmail.includes('@') && !payload.guestEmail.includes('no-email-provided')) {
+        const custResult = await resend.emails.send({
           from: FROM_EMAIL,
           to: payload.guestEmail,
           subject: customerSubject,
           html: customerHtml,
           replyTo: ADMIN_EMAIL,
-        }).catch(err => {
-          console.warn('[Resend Customer Email error]:', err?.message);
         });
+
+        if (custResult.error) {
+          console.warn('[Resend customer email primary error]:', custResult.error.message);
+          // Try fallback sender for customer
+          await resend.emails.send({
+            from: 'CEYVORIA TOURS <onboarding@resend.dev>',
+            to: payload.guestEmail,
+            subject: customerSubject,
+            html: customerHtml,
+            replyTo: ADMIN_EMAIL,
+          }).catch(err => console.warn('[Resend customer fallback exception]:', err?.message));
+        }
       }
 
       return { success: true, provider: 'resend' };
     } catch (err: unknown) {
-      console.error('[Resend Error]:', err);
+      console.error('[Resend Exception]:', err);
     }
   }
 
@@ -98,7 +127,7 @@ export async function sendInquiryNotification(payload: InquiryEmailPayload) {
       });
 
       // 2. Send Customer Confirmation
-      if (payload.guestEmail && payload.guestEmail.includes('@')) {
+      if (payload.guestEmail && payload.guestEmail.includes('@') && !payload.guestEmail.includes('no-email-provided')) {
         await transporter.sendMail({
           from: `"CEYVORIA TOURS Concierge" <${GMAIL_USER}>`,
           to: payload.guestEmail,
