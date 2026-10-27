@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowUpRight, Mail, Phone, MessageCircle } from 'lucide-react';
+import { ArrowUpRight, Mail, Phone, MessageCircle, MapPin } from 'lucide-react';
 import Brand from './Brand';
 import LanguageSelector from './LanguageSelector';
 import { site } from '@/lib/site';
@@ -81,6 +81,16 @@ export default function Footer() {
                   style={{ color: '#6ee7b7' }}
                 >
                   <MessageCircle size={13} /> WhatsApp: {site.whatsapp}
+                </a>
+              )}
+              {site.address && (
+                <a
+                  href={site.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="View on Google Maps"
+                >
+                  <MapPin size={13} /> {site.address}
                 </a>
               )}
               {site.tripadvisor && (

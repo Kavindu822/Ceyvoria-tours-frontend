@@ -20,7 +20,7 @@ import {
 export const metadata: Metadata = {
   title: 'Contact Our Travel Team | CEYVORIA TOURS',
   description:
-    'Contact Ceyvoria Tours via WhatsApp (+94 76 781 0420), email (ceyvoriatours@gmail.com), or our tailor-made journey enquiry form. Based in Colombo, Sri Lanka.',
+    'Contact Ceyvoria Tours via WhatsApp (+94 76 781 0420), email (ceyvoriatours@gmail.com), or our tailor-made journey enquiry form. Based in Mirissa, Sri Lanka.',
 };
 
 export default function Contact() {
@@ -30,9 +30,53 @@ export default function Contact() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'TravelAgency',
+            name: site.name,
+            description: site.subtitle,
+            url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ceyvoria.com',
+            telephone: site.phoneRaw,
+            email: site.email,
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: 'Indasara Mawatha',
+              addressLocality: 'Mirissa',
+              addressRegion: 'Southern Province',
+              addressCountry: 'LK',
+            },
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: site.coordinates.lat,
+              longitude: site.coordinates.lng,
+            },
+            hasMap: site.googleMapsUrl,
+            openingHoursSpecification: [
+              {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: [
+                  'Monday',
+                  'Tuesday',
+                  'Wednesday',
+                  'Thursday',
+                  'Friday',
+                  'Saturday',
+                  'Sunday',
+                ],
+                opens: '00:00',
+                closes: '23:59',
+              },
+            ],
+          }),
+        }}
+      />
+
       <PageHero
         title="Let's talk Sri Lanka."
-        description="Direct access to our senior journey planners in Colombo. We listen to your wishes and design a private itinerary crafted exclusively around you."
+        description="Direct access to our senior journey planners. We listen to your wishes and design a private itinerary crafted exclusively around you."
         image="/images/andrei-alekseev-vvltlbkjmwq-unsplash.webp"
         kicker="A CONVERSATION BEGINS"
       />
@@ -136,22 +180,48 @@ export default function Contact() {
               </div>
 
               {/* Location Card */}
-              <div className="contact-channel-card">
-                <div style={{ flex: 1 }}>
-                  <div className="contact-channel-title">Our Island Headquarters & Location</div>
-                  <div className="contact-channel-val" style={{ cursor: 'default' }}>
-                    Colombo, Sri Lanka
+              <div className="contact-channel-card" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%', gap: 14 }}>
+                  <div style={{ flex: 1 }}>
+                    <div className="contact-channel-title">Our Island Headquarters & Location</div>
+                    <div className="contact-channel-val" style={{ cursor: 'default' }}>
+                      {site.location}
+                    </div>
+                    <div className="contact-channel-desc" style={{ marginTop: 2 }}>
+                      {site.address}
+                    </div>
+                    <div style={{ fontSize: '.72rem', color: 'var(--palm)', fontWeight: 700, marginTop: 6 }}>
+                      ✓ {site.islandwide}
+                    </div>
                   </div>
-                  <div className="contact-channel-desc" style={{ marginTop: 2 }}>
-                    Alfred Place, Colombo 03, Western Province, Sri Lanka.
-                  </div>
-                  <div style={{ fontSize: '.72rem', color: 'var(--palm)', fontWeight: 700, marginTop: 6 }}>
-                    ✓ Islandwide concierge presence across Colombo, Kandy, Nuwara Eliya, Ella, Yala & Galle.
+                  <div className="contact-channel-icon">
+                    <MapPin size={20} />
                   </div>
                 </div>
-                <div className="contact-channel-icon">
-                  <MapPin size={20} />
-                </div>
+
+                {site.googleMapsUrl && (
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #e1e8e2' }}>
+                    <a
+                      href={site.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="whatsapp-action-btn"
+                      style={{
+                        margin: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        width: 'fit-content',
+                        fontSize: '.78rem',
+                        padding: '7px 14px',
+                      }}
+                    >
+                      <MapPin size={14} />
+                      <span>Open on Google Maps</span>
+                      <ArrowUpRight size={13} />
+                    </a>
+                  </div>
+                )}
               </div>
 
               {/* Concierge Hours Card */}
@@ -159,7 +229,7 @@ export default function Contact() {
                 <div style={{ flex: 1 }}>
                   <div className="contact-channel-title">Concierge & Availability</div>
                   <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--forest)' }}>
-                    Available 24/7
+                    {site.hours}
                   </div>
                   <div className="contact-channel-desc" style={{ marginTop: 3 }}>
                     Round-the-clock traveller care, consultation & on-ground concierge support 365 days a year.
@@ -171,12 +241,66 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="editorial-photo" style={{ height: 320, marginTop: 28 }}>
-              <Image
-                src="/images/dinuka-lankaloka-idueaebb-rq-unsplash.webp"
-                alt="Palms along the southern coast of Sri Lanka"
-                width={760}
-                height={480}
+            {/* Embedded Google Map */}
+            <div
+              style={{
+                marginTop: 24,
+                borderRadius: 8,
+                overflow: 'hidden',
+                border: '1px solid #dce4dd',
+                background: '#ffffff',
+                boxShadow: '0 4px 20px rgba(5,46,39,0.06)',
+              }}
+            >
+              <div
+                style={{
+                  padding: '12px 16px',
+                  background: '#f8faf8',
+                  borderBottom: '1px solid #e1e8e2',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 8,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <MapPin size={16} color="var(--forest)" />
+                  <div>
+                    <div style={{ fontSize: '.84rem', fontWeight: 800, color: 'var(--forest)' }}>
+                      Mirissa Headquarters · Disna Family House
+                    </div>
+                    <div style={{ fontSize: '.72rem', color: '#68776d' }}>
+                      {site.address}
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href={site.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: '.76rem',
+                    fontWeight: 700,
+                    color: 'var(--palm)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>View Larger Map</span>
+                  <ArrowUpRight size={12} />
+                </a>
+              </div>
+              <iframe
+                title="Ceyvoria Tours Location - Mirissa"
+                src={site.googleMapsEmbedUrl}
+                width="100%"
+                height="280"
+                style={{ border: 0, display: 'block' }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           </div>
