@@ -238,6 +238,30 @@ export default function TripWizard() {
         privacyConsent: info.consent,
       });
 
+      // Dispatch automated email alerts to ceyvoriatours@gmail.com and customer
+      try {
+        await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'CustomTrip',
+            reference: res.reference,
+            guestName: info.name.trim(),
+            guestEmail: info.email.trim(),
+            guestPhone: phoneWithChannels,
+            country: info.country.trim(),
+            tourTitle: `Custom Tailor-Made Journey (${info.days} Days · ${info.styles.join(', ')})`,
+            travelDate: info.date || (info.flexible ? 'Flexible Dates' : 'Not specified'),
+            partySize: Number(info.travellers) || 2,
+            hotels: 'Tailored luxury boutique hotels / villas',
+            activities: info.interests,
+            specialRequests: combinedNotes,
+          }),
+        });
+      } catch (err) {
+        console.warn('[Trip wizard notification error]:', err);
+      }
+
       setStatus(
         `Received! Your enquiry reference is ${res.reference}. Our travel designers will review your preferences and reach out shortly.`
       );

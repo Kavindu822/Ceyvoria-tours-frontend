@@ -99,6 +99,26 @@ export default function ContactForm() {
         consent: form.consent,
       });
 
+      // Dispatch automated email alerts to ceyvoriatours@gmail.com and customer
+      try {
+        await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'ContactMessage',
+            reference: r.reference,
+            guestName: form.name.trim(),
+            guestEmail: form.email.trim(),
+            guestPhone: phoneWithMessaging,
+            country: form.country.trim(),
+            subject: form.subject,
+            message: form.message.trim(),
+          }),
+        });
+      } catch (err) {
+        console.warn('[Contact notification error]:', err);
+      }
+
       setStatus(`Thank you! Your message reference is ${r.reference}. Our Sri Lanka travel team will be in touch shortly.`);
       setForm({
         name: '',

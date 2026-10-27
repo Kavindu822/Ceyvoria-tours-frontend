@@ -107,6 +107,31 @@ _Awaiting your custom itemized quotation & advance payment details._`;
       // Ignore API errors to ensure customer WhatsApp flow is uninterrupted
     }
 
+    // Dispatch automated email alerts to ceyvoriatours@gmail.com and customer
+    try {
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'TourBooking',
+          reference: ref,
+          guestName: fullName,
+          guestEmail: email,
+          guestPhone: phone,
+          country: country || 'International',
+          tourTitle: `${tour.title} (${tour.days} Days / ${tour.nights} Nights)`,
+          travelDate: travelDate || 'Flexible',
+          partySize: Number(adults) + Number(childrenCount),
+          hotels: needHotels === 'yes' ? 'Yes, please arrange boutique hotels' : 'No hotels (transport & activities only)',
+          mealPlan,
+          activities: selectedActivities,
+          specialRequests,
+        }),
+      });
+    } catch (err) {
+      console.warn('[Email Notification Dispatch Error]:', err);
+    }
+
     setIsSubmitting(false);
     setSubmitted(true);
 
