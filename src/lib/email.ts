@@ -22,7 +22,7 @@ export interface InquiryEmailPayload {
 }
 
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || 'ceyvoriatours@gmail.com';
-const FROM_EMAIL = process.env.EMAIL_FROM || 'CEYVORIA TOURS <onboarding@resend.dev>';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'CEYVORIA TOURS <bookings@ceyvoriatours.com>';
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const GMAIL_PASS = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASSWORD;
 const GMAIL_USER = process.env.GMAIL_USER || process.env.SMTP_USER || 'ceyvoriatours@gmail.com';
@@ -72,9 +72,9 @@ export async function sendInquiryNotification(payload: InquiryEmailPayload) {
           to: payload.guestEmail,
           subject: customerSubject,
           html: customerHtml,
+          replyTo: ADMIN_EMAIL,
         }).catch(err => {
-          // If Resend is unverified, sending to outside emails might require domain verification
-          console.warn('[Resend Customer Email skipped/pending domain verification]:', err?.message);
+          console.warn('[Resend Customer Email error]:', err?.message);
         });
       }
 
